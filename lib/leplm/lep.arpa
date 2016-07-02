@@ -1,0 +1,160 @@
+#############################################################################
+## Copyright (c) 1996, Carnegie Mellon University, Cambridge University,
+## Ronald Rosenfeld and Philip Clarkson
+#############################################################################
+=============================================================================
+===============  This file was produced by the CMU-Cambridge  ===============
+===============     Statistical Language Modeling Toolkit     ===============
+=============================================================================
+This is a 3-gram language model, based on a vocabulary of 19 words,
+  which begins "</s>", "<s>", "alpha"...
+This is a CLOSED-vocabulary model
+  (OOVs eliminated from training data and are forbidden in test data)
+Good-Turing discounting was applied.
+1-gram frequency of frequency : 16 
+2-gram frequency of frequency : 33 0 0 0 0 0 0 
+3-gram frequency of frequency : 49 0 0 0 0 0 0 
+1-gram discounting ratios : 0.94 
+2-gram discounting ratios : 
+3-gram discounting ratios : 
+This file is in the ARPA-standard format introduced by Doug Paul.
+
+p(wd3|wd1,wd2)= if(trigram exists)           p_3(wd1,wd2,wd3)
+                else if(bigram w1,w2 exists) bo_wt_2(w1,w2)*p(wd3|wd2)
+                else                         p(wd3|w2)
+
+p(wd2|wd1)= if(bigram exists) p_2(wd1,wd2)
+            else              bo_wt_1(wd1)*p_1(wd2)
+
+All probs and back-off weights (bo_wt) are given in log10 form.
+
+Data formats:
+
+Beginning of data mark: \data\
+ngram 1=nr            # number of 1-grams
+ngram 2=nr            # number of 2-grams
+ngram 3=nr            # number of 3-grams
+
+\1-grams:
+p_1     wd_1 bo_wt_1
+\2-grams:
+p_2     wd_1 wd_2 bo_wt_2
+\3-grams:
+p_3     wd_1 wd_2 wd_3 
+
+end of data mark: \end\
+
+\data\
+ngram 1=19
+ngram 2=34
+ngram 3=49
+
+\1-grams:
+-0.4861 </s>	-1.0702
+-0.4597 <s>	-1.3724
+-1.7165 alpha	-0.3054
+-1.7165 bravo	-0.3054
+-1.7165 charlie	-0.3054
+-1.7165 classical	-0.3054
+-1.7165 delta	-0.3054
+-1.7165 foxtrot	-0.3054
+-1.7165 good_afternoon	-0.3054
+-1.7165 good_day	-0.3054
+-1.7165 good_morning	-0.3054
+-1.7165 its_the_end_of_the_world	-0.3054
+-1.7165 lep	-0.3054
+-1.7165 modern	-0.3054
+-1.7165 next	-0.3054
+-1.7165 play	-0.3054
+-1.7165 previous	-0.3054
+-1.7165 sing	-0.3054
+-1.7165 thank_you	0.0000
+
+\2-grams:
+-0.0248 </s> <s> -0.1635
+-1.2430 <s> alpha 0.1761
+-1.2430 <s> bravo 0.1761
+-1.2430 <s> charlie 0.1761
+-1.2430 <s> classical 0.1761
+-1.2430 <s> delta 0.1761
+-1.2430 <s> foxtrot 0.1761
+-1.2430 <s> good_afternoon 0.1761
+-1.2430 <s> good_day 0.1761
+-1.2430 <s> good_morning 0.1761
+-1.2430 <s> its_the_end_of_the_world 0.1761
+-1.2430 <s> lep 0.1761
+-1.2430 <s> modern 0.1761
+-1.2430 <s> next 0.1761
+-1.2430 <s> play 0.1761
+-1.2430 <s> previous 0.1761
+-1.2430 <s> sing 0.1761
+-1.2430 <s> thank_you -0.1293
+-0.1761 alpha </s> 0.9542
+-0.1761 bravo </s> 0.9542
+-0.1761 charlie </s> 0.9542
+-0.1761 classical </s> 0.9542
+-0.1761 delta </s> 0.9542
+-0.1761 foxtrot </s> 0.9542
+-0.1761 good_afternoon </s> 0.9542
+-0.1761 good_day </s> 0.9542
+-0.1761 good_morning </s> 0.9542
+-0.1761 its_the_end_of_the_world </s> 0.9542
+-0.1761 lep </s> 0.9542
+-0.1761 modern </s> 0.9542
+-0.1761 next </s> 0.9542
+-0.1761 play </s> 0.9542
+-0.1761 previous </s> 0.9542
+-0.1761 sing </s> 0.9542
+
+\3-grams:
+-1.2304 </s> <s> bravo 
+-1.2304 </s> <s> charlie 
+-1.2304 </s> <s> classical 
+-1.2304 </s> <s> delta 
+-1.2304 </s> <s> foxtrot 
+-1.2304 </s> <s> good_afternoon 
+-1.2304 </s> <s> good_day 
+-1.2304 </s> <s> good_morning 
+-1.2304 </s> <s> its_the_end_of_the_world 
+-1.2304 </s> <s> lep 
+-1.2304 </s> <s> modern 
+-1.2304 </s> <s> next 
+-1.2304 </s> <s> play 
+-1.2304 </s> <s> previous 
+-1.2304 </s> <s> sing 
+-1.2304 </s> <s> thank_you 
+-0.3010 <s> alpha </s> 
+-0.3010 <s> bravo </s> 
+-0.3010 <s> charlie </s> 
+-0.3010 <s> classical </s> 
+-0.3010 <s> delta </s> 
+-0.3010 <s> foxtrot </s> 
+-0.3010 <s> good_afternoon </s> 
+-0.3010 <s> good_day </s> 
+-0.3010 <s> good_morning </s> 
+-0.3010 <s> its_the_end_of_the_world </s> 
+-0.3010 <s> lep </s> 
+-0.3010 <s> modern </s> 
+-0.3010 <s> next </s> 
+-0.3010 <s> play </s> 
+-0.3010 <s> previous </s> 
+-0.3010 <s> sing </s> 
+-0.3010 <s> thank_you </s> 
+-0.3010 alpha </s> <s> 
+-0.3010 bravo </s> <s> 
+-0.3010 charlie </s> <s> 
+-0.3010 classical </s> <s> 
+-0.3010 delta </s> <s> 
+-0.3010 foxtrot </s> <s> 
+-0.3010 good_afternoon </s> <s> 
+-0.3010 good_day </s> <s> 
+-0.3010 good_morning </s> <s> 
+-0.3010 its_the_end_of_the_world </s> <s> 
+-0.3010 lep </s> <s> 
+-0.3010 modern </s> <s> 
+-0.3010 next </s> <s> 
+-0.3010 play </s> <s> 
+-0.3010 previous </s> <s> 
+-0.3010 sing </s> <s> 
+
+\end\
