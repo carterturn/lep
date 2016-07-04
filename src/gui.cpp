@@ -66,6 +66,13 @@ int gui::init() {
 		
 		return -1;
 	}
+
+	// Display GUI on primary monitor (not the best default, but better than just using the far left one)
+	GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+	int position_x, position_y;
+
+	glfwGetMonitorPos(monitor, &position_x, &position_y);
+	glfwSetWindowPos(window, position_x, position_y);
 	
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(1);
