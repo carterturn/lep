@@ -68,6 +68,7 @@ int gui::init() {
 	}
 	
 	glfwMakeContextCurrent(window);
+	glfwSwapInterval(1);
 	glfwSetInputMode(window, GLFW_STICKY_MOUSE_BUTTONS, GL_TRUE);
 	glOrtho(0, window_x, 0, window_y, -1.0, 1.0);
 
@@ -78,17 +79,10 @@ int gui::init() {
 
 int gui::run(){
 	cout << "Running\n";
-	// To avoid overwhelming server, only update multibuttons onces every two seconds
-	int counter = 0;
 	while(!glfwWindowShouldClose(window)){
-		glClear(GL_COLOR_BUFFER_BIT);
+		update_multibuttons();
 		
-		future->draw();
-
-		if(counter == 20){
-			counter = 0;
-			update_multibuttons();
-		}
+		glfwGetWindowSize(window, &window_x, &window_y);
 		
 		if(glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS){
 			double mouse_x = 0;
@@ -101,12 +95,13 @@ int gui::run(){
 			}
 		}
 		
-		glfwSwapBuffers(window);
-		glfwPollEvents();
-		glfwGetWindowSize(window, &window_x, &window_y);
+		glClear(GL_COLOR_BUFFER_BIT);
 
-		counter++;
-		usleep(50000);
+		future->draw();
+		
+		glfwSwapBuffers(window);
+		usleep(100000);
+		glfwWaitEvents();
 	}
 	
 	glfwTerminate();
