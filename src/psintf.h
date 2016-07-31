@@ -25,7 +25,7 @@
 class psintf {
 
 public:
-	int init(std::string dict, std::string libdir = "./lib", bool psv = false, bool v = false);
+	int init(std::string dict, std::string lm, std::string hmm, bool psv = false, bool v = false);
 	
 	std::string getword(int thresh=7);
 	
@@ -35,11 +35,10 @@ public:
 	int resume();
 	
 private:
-	audio arw;
 	ps_decoder_t *ps;
 	bool verb;
 
 	const int SAMPLE_SIZE = 32000;
-	const int SUB_BUFFERS = 64;
+	const int SUB_BUFFERS = 8;
 	const int WORD_CACHE_SIZE = 8;
 };

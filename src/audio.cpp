@@ -26,31 +26,26 @@
 
 using namespace std;
 
-audio::audio(){
-	inss.format = PA_SAMPLE_S16LE;
-	inss.channels = 1;
-	inss.rate = 16000;
-	
-	resume();
-}
-
-audio::~audio(){
-	pause();
-}
+pa_simple *record = NULL;
 
 int audio::read(int16_t *buffer, int size){
+	if(record == NULL){
+		resume();
+	}
+
+	int error = 0;
 	
-	if(pa_simple_flush(r, &error) < 0){
+	if(pa_simple_flush(record, &error) < 0){
 		cout << "pa_simple_flush error " << pa_strerror(error) << "\n";
-		pa_simple_free(r);
+		pa_simple_free(record);
 		return -1;
 	}
 	
 	pa_usec_t latency;
 	
-	if((latency = pa_simple_get_latency(r, &error)) == (pa_usec_t) -1) {
+	if((latency = pa_simple_get_latency(record, &error)) == (pa_usec_t) -1) {
 		cout << "pa_simple_get_latency error " << pa_strerror(error) << "\n";
-		pa_simple_free(r);
+		pa_simple_free(record);
 		return -1;
 	}
 	
@@ -58,9 +53,9 @@ int audio::read(int16_t *buffer, int size){
 		cerr << "Speech error. Latency: " << latency << "\n";
 	}
 	
-	if(pa_simple_read(r, buffer, size, &error) < 0){
+	if(pa_simple_read(record, buffer, size, &error) < 0){
 		cout << "pa_simple_new error " << pa_strerror(error) << "\n";
-		pa_simple_free(r);
+		pa_simple_free(record);
 		return -1;
 	}
 	
@@ -68,18 +63,26 @@ int audio::read(int16_t *buffer, int size){
 }
 
 int audio::pause(){
-	pa_simple_free(r);
+	if(record != NULL){
+		pa_simple_free(record);
+	}
 	return 0;
 }
 
 int audio::resume(){
+	pa_sample_spec inss;
 	
-	if(!(r = pa_simple_new(NULL, "LEP Audio", PA_STREAM_RECORD, NULL, "Record", &inss, NULL, NULL, &error))){
-		cout << "pa_simple_new error " << pa_strerror(error) << "\n";
-		pa_simple_free(r);
+	inss.format = PA_SAMPLE_S16LE;
+	inss.channels = 1;
+	inss.rate = 16000;
+
+	int error = 0;
+
+	record = pa_simple_new(NULL, "LEP Audio", PA_STREAM_RECORD, NULL, "Record", &inss, NULL, NULL, &error);
+	if(record == NULL){
+		cerr << "pa_simple_new error " << pa_strerror(error) << "\n";
 		return 0;
 	}
 	
 	return 0;
 }
-

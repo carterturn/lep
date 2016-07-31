@@ -32,10 +32,11 @@ speech::~speech(){
 int speech::init(){
 	int rv = 0;
 
-	string libdir = getparam("speech_lib_dir", config, "lib/");
+	string hmm = getparam("speech_hmm", config, "lib/lephmm");
+	string lm = getparam("speech_lm", config, "lib/leplm/lep.lm.DMP");
 	
-	rv = detect.init(getparam("speech_detect_dict", config, "lib/leplm/detect.dic"), libdir, false, false);
-	rv += 10*action.init(getparam("speech_action_dict", config, "lib/leplm/action.dic"), libdir, false, false);
+	rv = detect.init(getparam("speech_detect_dict", config, "lib/leplm/detect.dic"), hmm, lm, false, true);
+	rv += 10*action.init(getparam("speech_action_dict", config, "lib/leplm/action.dic"), hmm, lm, false, true);
 	
 	detect.pause();
 	action.pause();

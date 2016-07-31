@@ -22,22 +22,10 @@
 #include <pulse/simple.h>
 
 
-class audio{
-
-public:
-	audio();
-	~audio();
-	
+namespace audio{
 	int read(int16_t *buffer, int size);
 	//int write(int16_t *buffer, int size);
 	
-	int pause();
 	int resume();
-
-private:
-	pa_simple *r;
-	//pa_simple *w;
-	pa_sample_spec inss;
-	//pa_sample_spec outss;
-	int error;
+	int pause();
 };
