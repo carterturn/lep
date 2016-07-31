@@ -1,7 +1,7 @@
 #Local libraries
 add_executable(lep lep.cpp)
 add_library(core config.cpp lepmodule.cpp lepserver.cpp ct_time.cpp util.cpp)
-add_library(action action.cpp device.cpp arduino.cpp speak.cpp music.cpp ct_time.cpp)
+add_library(action action.cpp device.cpp arduino.cpp raspberry_pi.cpp speak.cpp music.cpp ct_time.cpp)
 add_library(speech audio.cpp psintf.cpp speech.cpp lepclient.cpp ct_time.cpp)
 add_library(gui gui.cpp lepclient.cpp ct_time.cpp)
 add_library(text text.cpp lepclient.cpp ct_time.cpp)

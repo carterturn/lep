@@ -21,21 +21,25 @@
 
 #include "device.h"
 
-class arduino : public device{
+#include <fstream>
+
+struct gpio_pin{
+	int pin;
+	std::fstream file;
+};
+
+class raspberry_pi : public device{
 
 public:
-	arduino(std::string port, int num_devices, std::string key);
-	~arduino();
+	raspberry_pi(int * gpio_pins, int num_devices, std::string key);
+	~raspberry_pi();
 
 	int connect();
-	
-	std::string process(std::string data);
-		
-protected:
-	int arduinofd;
-	int * status;
-	
-private:
-	std::string port;
 
+	std::string process(std::string data);
+
+protected:
+	gpio_pin * gpio;
+	int * status;
 };
+
