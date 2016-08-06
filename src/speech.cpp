@@ -49,14 +49,10 @@ string speech::recognize(int mode){
 	string word = "NULL";
 	
 	if(mode == 0){
-		detect.resume();
 		word = detect.getword(5);
-		detect.pause();
 	}
 	else if(mode == 1){
-		action.resume();
 		word = action.getword(4);
-		action.pause();
 	}
 	
 	return word;
@@ -92,8 +88,16 @@ int speech::run(){
 				if(config[i].param == "speech_word_"+word){
 					string command = config[i].value;
 					commanded = true;
-					if(command == "detect") mode = 0;
-					else if(command == "action") mode = 1;
+					if(command == "detect"){
+						action.pause();
+						mode = 0;
+						detect.resume();
+					}
+					else if(command == "action"){
+						detect.pause();
+						mode = 1;
+						action.resume();
+					}
 					else if(command != "") socketsendrecv(command);
 					else commanded = false;
 				}

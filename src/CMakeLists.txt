@@ -26,11 +26,12 @@ target_link_libraries(lep tomcrypt)
 target_link_libraries(lep ctsocket)
 
 #pocketsphinx TODO: make platform independant
-include_directories(/usr/include/pocketsphinx)
 include_directories(/usr/include/sphinxbase)
+include_directories(/usr/include/pocketsphinx)
 link_directories(/usr/lib64)
 target_link_libraries(lep pocketsphinx)
 target_link_libraries(lep sphinxbase)
+target_link_libraries(lep sphinxad)
 
 #futuregl TODO: make platform independant
 include_directories(/usr/include/futuregl)

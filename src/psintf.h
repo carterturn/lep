@@ -20,7 +20,7 @@
 #include <iostream>
 
 #include <pocketsphinx.h>
-#include "audio.h"
+#include <sphinxbase/cont_ad.h>
 
 class psintf {
 
@@ -35,10 +35,12 @@ public:
 	int resume();
 	
 private:
+	ad_rec_t * ad;
+	cont_ad_t * cont;
+	int cycles_since_calib;
 	ps_decoder_t *ps;
 	bool verb;
 
-	const int SAMPLE_SIZE = 32000;
-	const int SUB_BUFFERS = 8;
-	const int WORD_CACHE_SIZE = 8;
+	// How long to wait during silence until utterance is finished
+	const int SILENCE_DELAY = 4000; // In samples
 };
