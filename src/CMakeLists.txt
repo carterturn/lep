@@ -2,7 +2,7 @@
 add_executable(lep lep.cpp)
 add_library(core config.cpp lepmodule.cpp lepserver.cpp ct_time.cpp util.cpp)
 add_library(action action.cpp device.cpp arduino.cpp speak.cpp music.cpp ct_time.cpp)
-add_library(speech audio.cpp psintf.cpp speech.cpp lepclient.cpp ct_time.cpp)
+add_library(speech psintf.cpp speech.cpp lepclient.cpp ct_time.cpp)
 add_library(gui gui.cpp lepclient.cpp ct_time.cpp)
 add_library(text text.cpp lepclient.cpp ct_time.cpp)
 
@@ -44,13 +44,6 @@ link_directories(/usr/lib64)
 target_link_libraries(lep GL)
 target_link_libraries(lep glfw)
 target_link_libraries(lep ftgl)
-
-#Pulseaudio
-include_directories(/usr/include/)
-link_directories(/usr/lib64)
-target_link_libraries(lep pulse)
-target_link_libraries(lep pulse-simple)
-target_link_libraries(lep asound)
 
 #Espeak
 include_directories(/usr/include/)
