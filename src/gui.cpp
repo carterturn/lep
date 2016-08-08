@@ -171,3 +171,23 @@ void gui::run_button_command(string buttonname){
 		}
 	}
 }
+
+int main(int argc, char* argv[]){
+	string config = "lep.conf";
+	
+	if(argc > 1) config = argv[1];
+
+	string password;
+	string key;
+	vector<configtuple> params = getconfig(config, password, key);
+
+	gui g(password, key, params);
+
+	int code = g.init();
+	if(code != 0){
+		cout << "ERROR: " << code << "\n";
+		return code;
+	}
+
+	return g.run();
+}

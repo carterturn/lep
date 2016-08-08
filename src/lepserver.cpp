@@ -17,11 +17,21 @@
   along with LEP.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "compile_config.h"
 #include "action.h"
+
+#ifdef SERVER_DEVICES
 #include "arduino.h"
+#endif
+
+#ifdef SERVER_AUDIO
 #include "music.h"
+#endif
+
 #include "speak.h"
 #include "util.h"
+
+#include "config.h"
 
 #include "lepserver.h"
 
@@ -42,15 +52,9 @@ lepserver::lepserver(std::string password, std::string key, vector<configtuple> 
 		if(params[i].param == "server_action"){
 
 			vector<string> action_values = split_string(params[i].value, ',');
-			
-			if(action_values[1] == "music"){
-				// Default values
-				string music_ip = action_values[2];
-				int music_port = atoi(action_values[3].c_str());
-				
-				actions.push_back(new music(music_ip, music_port, action_values[0]));
-			}
-			else if(action_values[1] == "arduino"){
+
+#ifdef SERVER_DEVICES
+			if(action_values[1] == "arduino"){
 				// Default values
 				string arduino_port = action_values[2];
 				int arduino_devices = atoi(action_values[3].c_str());
@@ -59,9 +63,19 @@ lepserver::lepserver(std::string password, std::string key, vector<configtuple> 
 				actions.push_back(a);
 				devices.push_back(a);
 			}
+#endif
+#ifdef SERVER_AUDIO
+			if(action_values[1] == "music"){
+				// Default values
+				string music_ip = action_values[2];
+				int music_port = atoi(action_values[3].c_str());
+				
+				actions.push_back(new music(music_ip, music_port, action_values[0]));
+			}
 			else if(action_values[1] == "speak"){
 				actions.push_back(new speak(action_values[0]));
 			}
+#endif
 		}
 		else if(params[i].param == "server_port"){
 			port = atoi(params[i].value.c_str());
@@ -179,4 +193,24 @@ string lepserver::process(string command){
 		mute_speech = false;
 		return "finished";
 	}
+}
+
+int main(int argc, char* argv[]){
+	string config = "lep.conf";
+	
+	if(argc > 1) config = argv[1];
+
+	string password;
+	string key;
+	vector<configtuple> params = getconfig(config, password, key);
+
+	lepserver server(password, key, params);
+
+	int code = server.init();
+	if(code != 0){
+		cout << "ERROR: " << code << "\n";
+		return code;
+	}
+
+	return server.run();
 }

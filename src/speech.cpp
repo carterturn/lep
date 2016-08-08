@@ -108,3 +108,23 @@ int speech::run(){
 	
 	return 0;
 }
+
+int main(int argc, char* argv[]){
+	string config = "lep.conf";
+	
+	if(argc > 1) config = argv[1];
+
+	string password;
+	string key;
+	vector<configtuple> params = getconfig(config, password, key);
+
+	speech s(password, key, params);
+
+	int code = s.init();
+	if(code != 0){
+		cout << "ERROR: " << code << "\n";
+		return code;
+	}
+
+	return s.run();
+}
