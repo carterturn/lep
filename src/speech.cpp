@@ -32,10 +32,11 @@ speech::~speech(){
 int speech::init(){
 	int rv = 0;
 
-	string libdir = getparam("speech_lib_dir", config, "lib/");
+	string hmm = getparam("speech_hmm", config, "lib/lephmm");
+	string lm = getparam("speech_lm", config, "lib/leplm/lep.lm.DMP");
 	
-	rv = detect.init(getparam("speech_detect_dict", config, "lib/leplm/detect.dic"), libdir, false, false);
-	rv += 10*action.init(getparam("speech_action_dict", config, "lib/leplm/action.dic"), libdir, false, false);
+	rv = detect.init(getparam("speech_detect_dict", config, "lib/leplm/detect.dic"), hmm, lm, false, true);
+	rv += 10*action.init(getparam("speech_action_dict", config, "lib/leplm/action.dic"), hmm, lm, false, true);
 	
 	detect.pause();
 	action.pause();
@@ -48,14 +49,10 @@ string speech::recognize(int mode){
 	string word = "NULL";
 	
 	if(mode == 0){
-		detect.resume();
 		word = detect.getword(5);
-		detect.pause();
 	}
 	else if(mode == 1){
-		action.resume();
 		word = action.getword(4);
-		action.pause();
 	}
 	
 	return word;
@@ -91,8 +88,16 @@ int speech::run(){
 				if(config[i].param == "speech_word_"+word){
 					string command = config[i].value;
 					commanded = true;
-					if(command == "detect") mode = 0;
-					else if(command == "action") mode = 1;
+					if(command == "detect"){
+						action.pause();
+						mode = 0;
+						detect.resume();
+					}
+					else if(command == "action"){
+						detect.pause();
+						mode = 1;
+						action.resume();
+					}
 					else if(command != "") socketsendrecv(command);
 					else commanded = false;
 				}
@@ -102,4 +107,24 @@ int speech::run(){
 	}
 	
 	return 0;
+}
+
+int main(int argc, char* argv[]){
+	string config = "lep.conf";
+	
+	if(argc > 1) config = argv[1];
+
+	string password;
+	string key;
+	vector<configtuple> params = getconfig(config, password, key);
+
+	speech s(password, key, params);
+
+	int code = s.init();
+	if(code != 0){
+		cout << "ERROR: " << code << "\n";
+		return code;
+	}
+
+	return s.run();
 }

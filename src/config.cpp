@@ -23,15 +23,9 @@
 #include <cstdlib>
 #include <ctlog.h>
 
-// Different module types
-#include "lepserver.h"
-#include "speech.h"
-#include "gui.h"
-#include "text.h"
-
 using namespace std;
 
-lepmodule * getmodule(string configpath){
+vector<configtuple> getconfig(string configpath, string & password, string & key){
 	
 	fstream configfile;
 	configfile.open(configpath);
@@ -60,42 +54,19 @@ lepmodule * getmodule(string configpath){
 	
 	configfile.close();
 	
-	moduledata data;
-	
 	vector<configtuple> moduleconfig;
 	
 	for(int i = 0; i < config.size(); i++){
-		if(config[i].param == "type"){
-			data.type = config[i].value;
-		}
-		else if(config[i].param == "password"){
-			data.password = config[i].value;
+		if(config[i].param == "password"){
+			password = config[i].value;
 		}
 		else if(config[i].param == "key"){
-			data.key = config[i].value;
+			key = config[i].value;
 		}
 		else{
 			moduleconfig.push_back(config[i]);
 		}
 	}
 	
-	lepmodule *newmodule;
-	
-	if(data.type == "server"){
-		newmodule = new lepserver(data.password, data.key, moduleconfig);
-	}
-	else if(data.type == "speech"){
-		newmodule = new speech(data.password, data.key, moduleconfig);
-	}
-	else if(data.type == "gui"){
-		newmodule = new gui(data.password, data.key, moduleconfig);
-	}
-	else if(data.type == "text"){
-		newmodule = new text(data.password, data.key, moduleconfig);
-	}
-	else {
-		cerr << "Module type not found: " << data.type << "\n";
-	}
-	
-	return newmodule;
+	return moduleconfig;
 }

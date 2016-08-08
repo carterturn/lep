@@ -41,3 +41,23 @@ int text::run(){
 	}
 	
 }
+
+int main(int argc, char* argv[]){
+	string config = "lep.conf";
+	
+	if(argc > 1) config = argv[1];
+
+	string password;
+	string key;
+	vector<configtuple> params = getconfig(config, password, key);
+
+	text t(password, key, params);
+
+	int code = t.init();
+	if(code != 0){
+		cout << "ERROR: " << code << "\n";
+		return code;
+	}
+
+	return t.run();
+}

@@ -25,19 +25,21 @@
 #include <iostream>
 #include <chrono>
 
+#include <sphinxbase/err.h>
+
 using namespace std;
 
-int psintf::init(string dict, string libdir, bool vps, bool v){
+int psintf::init(string dict, string hmm, string lm, bool vps, bool v){
 	cmd_ln_t *config;
 	
 	if(!vps) config = cmd_ln_init(NULL, ps_args(), FALSE,
-				      "-hmm", string(libdir + "/lephmm").c_str(),
-				      "-lm", string(libdir + "/leplm/lep.lm.DMP").c_str(),
+				      "-hmm", hmm.c_str(),
+				      "-lm", lm.c_str(),
 				      "-dict", dict.c_str(),
 				      "-logfn", "/dev/null", NULL);
 	else config = cmd_ln_init(NULL, ps_args(), FALSE,
-				  "-hmm", string(libdir + "/lephmm").c_str(),
-				  "-lm", string(libdir + "/leplm/lep.lm.DMP").c_str(),
+				  "-hmm", hmm.c_str(),
+				  "-lm", lm.c_str(),
 				  "-dict", dict.c_str(), NULL);
 	if(config == NULL) return 1;
 	
@@ -51,83 +53,80 @@ int psintf::init(string dict, string libdir, bool vps, bool v){
 
 string psintf::getword(int thresh){
 
-	const int smallsamplesize = SAMPLE_SIZE / SUB_BUFFERS;
-	
-	string words[WORD_CACHE_SIZE];
-	for(int i = 0; i < WORD_CACHE_SIZE; i++) words[i] = "";
-	
-	int worditer = 0;
-	bool detected = false;
-	int rv; // return value for pocketsphinx functions
-
-	int16_t buffer[SAMPLE_SIZE] = {0};
-	int index = SUB_BUFFERS - 1;
-	
-	arw.read(buffer, SAMPLE_SIZE);
-	
-	while(!detected){
-
-		if(arw.read(&buffer[index*smallsamplesize], smallsamplesize) < 0) return "ERROR";
-		// Time loop to increase precision
-		chrono::steady_clock::time_point start = chrono::steady_clock::now();
-		
-		index = (index + 1) % SUB_BUFFERS;
-
-	        rv = ps_start_utt(ps, NULL);
-		
-		for(int i = index; i < SUB_BUFFERS + index; i++){
-			int16_t *tmpbuf;
-			
-			tmpbuf = &buffer[(i%SUB_BUFFERS)*smallsamplesize];
-			
-			rv = ps_process_raw(ps, tmpbuf, smallsamplesize, FALSE, FALSE);
-		}
-		
-		char const *hyp, *uttid;
-		int32_t score;
-		
-		rv = ps_end_utt(ps);
-		if(rv < 0) return "e4";
-		
-		hyp = ps_get_hyp(ps, &score, &uttid);
-		if(hyp == NULL) return "e5";
-		
-		string word = hyp;
-		stringstream ss(word);
-		getline(ss, word, ' ');
-		if(verb) cout << "hyp: " << word << ":\n";
-		
-		words[worditer] = word;
-		worditer++;
-		
-		if(worditer > WORD_CACHE_SIZE-1){
-			int freq = 0;
-			detected = true;
-			if(words[0] == "") detected = false;
-			else{
-				for(int i = 0; i < WORD_CACHE_SIZE; i++){
-					if(words[0] == words[i]) freq++;
-				}
-			}
-			if(freq < thresh) detected = false;
-			worditer = 0;
-		}
-
-		int deltat = (int) chrono::duration<double, milli> (chrono::steady_clock::now() - start).count();
-		if(verb) cout << (smallsamplesize - deltat) << "\n";
-		usleep((smallsamplesize - deltat));
+	if(cycles_since_calib > 20){
+		pause();
+		resume();
 	}
 	
-	return words[0];
+	int buffer_size = 4096;
+	int16 buffer[buffer_size];
+
+	int k;
+	int last_timestamp;
+	while((k = cont_ad_read(cont, buffer, buffer_size)) == 0){}
+
+	if(k < 0) return "#Unable to read audio";
+
+	last_timestamp = cont->read_ts;
+
+	if(ps_start_utt(ps, NULL) < 0) return "#Unabel to start utt";
+
+	ps_process_raw(ps, buffer, k, FALSE, FALSE);
+
+	bool reading = true;
+	while(reading){
+		if((k = cont_ad_read(cont, buffer, buffer_size)) < 0) return "#Unable to read audio";
+
+		if(k == 0){
+			if((cont->read_ts - last_timestamp) > SILENCE_DELAY){
+				reading = false;
+			}
+		}
+
+		last_timestamp = cont->read_ts;
+		ps_process_raw(ps, buffer, k, FALSE, FALSE);
+	}
+
+	ps_end_utt(ps);
+
+	string word = ps_get_hyp(ps, NULL, NULL);
+
+	if(verb) cout << word << "\n";
+	
+	return word;
 }
 
 int psintf::pause(){
-	arw.pause();
+	if(ad != NULL){
+		ad_close(ad);
+		if(cont != NULL){
+			ad_stop_rec(ad);
+			while(ad_read(ad, NULL, 4096) >= 0){}
+			cont_ad_reset(cont);
+
+			cont_ad_close(cont);
+		}
+
+	}
 	return 0;
 }
 
 int psintf::resume(){
-	arw.resume();
+	ad = ad_open_dev(NULL, 16000);
+	if(ad == NULL) return 1;
+	
+	int error = 0;
+	cont = cont_ad_init(ad, ad_read);
+	if(cont == NULL) return 10;
+
+	error = ad_start_rec(ad);
+	if(error < 0) return error * 100;
+
+	error = cont_ad_calib(cont);
+	if(error < 0) return error * 1000;
+
+	cycles_since_calib = 0;
+
 	return 0;
 }
 

@@ -23,16 +23,7 @@
 // Will be used by subclasses
 #include <vector>
 
-struct moduledata{
-	std::string type;
-	std::string password;
-	std::string key;
-};
-
-struct configtuple{
-	std::string param;
-	std::string value;
-};
+#include "config.h"
 
 // Superclass for all LEP modules
 

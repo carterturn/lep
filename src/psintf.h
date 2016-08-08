@@ -20,12 +20,12 @@
 #include <iostream>
 
 #include <pocketsphinx.h>
-#include "audio.h"
+#include <sphinxbase/cont_ad.h>
 
 class psintf {
 
 public:
-	int init(std::string dict, std::string libdir = "./lib", bool psv = false, bool v = false);
+	int init(std::string dict, std::string lm, std::string hmm, bool psv = false, bool v = false);
 	
 	std::string getword(int thresh=7);
 	
@@ -35,11 +35,12 @@ public:
 	int resume();
 	
 private:
-	audio arw;
+	ad_rec_t * ad;
+	cont_ad_t * cont;
+	int cycles_since_calib;
 	ps_decoder_t *ps;
 	bool verb;
 
-	const int SAMPLE_SIZE = 32000;
-	const int SUB_BUFFERS = 64;
-	const int WORD_CACHE_SIZE = 8;
+	// How long to wait during silence until utterance is finished
+	const int SILENCE_DELAY = 4000; // In samples
 };

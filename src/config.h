@@ -19,7 +19,13 @@
 
 #pragma once
 
-#include "lepmodule.h"
+#include <iostream>
+#include <vector>
+
+struct configtuple{
+	std::string param;
+	std::string value;
+};
 
 // Returns a configured module based on the config given at configpath
-lepmodule * getmodule(std::string configpath);
+std::vector<configtuple> getconfig(std::string configpath, std::string & password, std::string & key);

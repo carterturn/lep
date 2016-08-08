@@ -1,3 +1,7 @@
-lep
+server
+lepserver
+speech
+gui
+text
 build
 *.conf
