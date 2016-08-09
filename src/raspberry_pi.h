@@ -22,16 +22,12 @@
 #include "device.h"
 
 #include <fstream>
-
-struct gpio_pin{
-	int pin;
-	std::fstream file;
-};
+#include <vector>
 
 class raspberry_pi : public device{
 
 public:
-	raspberry_pi(int * gpio_pins, int num_devices, std::string key);
+	raspberry_pi(std::vector<int> pins, std::string key);
 	~raspberry_pi();
 
 	int connect();
@@ -39,7 +35,7 @@ public:
 	std::string process(std::string data);
 
 protected:
-	gpio_pin * gpio;
+	std::vector<int> pins;
 	int * status;
 };
 

@@ -21,7 +21,6 @@
 #include <fstream>
 #include <regex>
 #include <cstdlib>
-#include <ctlog.h>
 
 using namespace std;
 

@@ -22,13 +22,14 @@
 
 #ifdef SERVER_DEVICES
 #include "arduino.h"
+#include "raspberry_pi.h"
 #endif
 
 #ifdef SERVER_AUDIO
 #include "music.h"
+#include "speak.h"
 #endif
 
-#include "speak.h"
 #include "util.h"
 
 #include "config.h"
@@ -62,6 +63,17 @@ lepserver::lepserver(std::string password, std::string key, vector<configtuple> 
 				device * a = new arduino(arduino_port, arduino_devices, action_values[0]);
 				actions.push_back(a);
 				devices.push_back(a);
+			}
+			else if(action_values[1] == "raspberry_pi"){
+				vector<int> pi_pins;
+
+				for(int i = 3; i < action_values.size(); i++){
+					pi_pins.push_back(atoi(action_values[i].c_str()));
+				}
+
+				device * r = new raspberry_pi(pi_pins, action_values[0]);
+				actions.push_back(r);
+				devices.push_back(r);
 			}
 #endif
 #ifdef SERVER_AUDIO
@@ -191,6 +203,9 @@ string lepserver::process(string command){
 	}
 	else if(command == "unmute"){
 		mute_speech = false;
+		return "finished";
+	}
+	else{
 		return "finished";
 	}
 }
