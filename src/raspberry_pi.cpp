@@ -22,6 +22,7 @@
 
 #include <cstdlib>
 #include <sstream>
+#include <unistd.h>
 
 using namespace std;
 
@@ -30,19 +31,46 @@ raspberry_pi::raspberry_pi(vector<int> pins, string key) : pins(pins), device(pi
 }
 
 raspberry_pi::~raspberry_pi(){
+	// Unexport files
+
+	for(int i = 0; i < num_devices; i++){
+		fstream unexport_file;
+		unexport_file.open("/sys/class/gpio/unexport");
+		unexport_file << pins[i];
+		unexport_file.close();
+	}
+
 	delete status;
 }
 
 int raspberry_pi::connect(){
 
 	// Export files
-	fstream export_file;
-	export_file.open("/sys/class/gpio/export");
-
 	for(int i = 0; i < num_devices; i++){
+		fstream export_file;
+		export_file.open("/sys/class/gpio/export");
 		export_file << pins[i];
+		export_file.close();
 	}
-	export_file.close();
+
+	// Set files to output
+	for(int i = 0; i < num_devices; i++){
+		stringstream filename;
+		filename << "/sys/class/gpio/gpio" << pins[i] << "/direction";
+		fstream direction_file(filename.str().c_str());
+		direction_file << "out";
+		direction_file.close();
+	}
+	
+	usleep(1000000);
+
+	// Export files
+	for(int i = 0; i < num_devices; i++){
+		fstream export_file;
+		export_file.open("/sys/class/gpio/export");
+		export_file << pins[i];
+		export_file.close();
+	}
 
 	// Set files to output
 	for(int i = 0; i < num_devices; i++){
@@ -75,16 +103,18 @@ string raspberry_pi::process(string data){
 		pin_file.open(filename.str().c_str());
 		
 		if(command.size() > 1){
-			pin_file << command[1] << "\n";
+			pin_file << command[1];
 		}
 		else{
 			string current;
 			getline(pin_file, current);
+			pin_file.close();
+			pin_file.open(filename.str().c_str());			
 			if(current == "0"){
-				pin_file << "1" << "\n";
+				pin_file << "1";
 			}
 			else {
-				pin_file << "0" << "\n";
+				pin_file << "0";
 			}
 		}
 
