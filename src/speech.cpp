@@ -37,7 +37,7 @@ int speech::init(){
 	
 	rv = detect.init(getparam("speech_detect_dict", config, "lib/leplm/detect.dic"), hmm, lm, false, true);
 	rv += 10*action.init(getparam("speech_action_dict", config, "lib/leplm/action.dic"), hmm, lm, false, true);
-	
+
 	detect.pause();
 	action.pause();
 	
