@@ -40,7 +40,7 @@ raspberry_pi::~raspberry_pi(){
 		unexport_file.close();
 	}
 
-	delete status;
+	free(status);
 }
 
 int raspberry_pi::connect(){

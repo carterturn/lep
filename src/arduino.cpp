@@ -43,7 +43,7 @@ arduino::arduino(string port, int num_devices, string key) : port(port), device(
 arduino::~arduino(){
 	close(arduinofd);
 	
-	delete status;
+	free(status);
 }
 
 int arduino::connect(){
