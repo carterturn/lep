@@ -32,13 +32,14 @@ lepclient::lepclient(string password, string key, vector<configtuple> params) : 
 string lepclient::get_time_password(){
 	string time_password = "";
 	
-	int now = chrono::system_clock::now().time_since_epoch() /  chrono::minutes(1);
+	int now = chrono::system_clock::now().time_since_epoch() /  chrono::seconds(1);
 	for(int i = 0; i < 4; i++){
 		time_password = (char) (now & 0xFF) + time_password;
 		now = now >> 8;
 	}
 
 	time_password += password;
+	cout << time_password << "\n";
 	
 	return time_password;
 }

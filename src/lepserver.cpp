@@ -104,10 +104,16 @@ lepserver::~lepserver(){
 bool lepserver::check_password_timeout(){
 	string time_password = s_read();
 	int time = 0;
-	time = (time_password[0] << 24) + (time_password[1] << 16)  + (time_password[2] << 8) + time_password[3];
+	time = ((unsigned char) time_password[0] << 24) |
+		((unsigned char) time_password[1] << 16) |
+		((unsigned char) time_password[2] << 8) |
+		((unsigned char) time_password[3]);
 	string attempted_password = time_password.erase(0, 4);
-	bool within_timeout = abs(time - (chrono::system_clock::now().time_since_epoch() / chrono::minutes(1)))
-		< message_timeout_minutes;
+	cout << attempted_password << "\n";
+	cout << time << "\n";
+	cout << (chrono::system_clock::now().time_since_epoch() / chrono::seconds(1)) << "\n";
+	bool within_timeout = abs(time - (chrono::system_clock::now().time_since_epoch() / chrono::seconds(1)))
+		< message_timeout_seconds;
 	bool password_good = attempted_password == password;
 	return within_timeout && password_good;
 }

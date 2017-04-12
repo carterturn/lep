@@ -38,7 +38,7 @@ public:
 	
 protected:
 	
-	const int message_timeout_minutes = 2;
+	const int message_timeout_seconds = 30;
 	bool check_password_timeout();
 	
 	int port;
