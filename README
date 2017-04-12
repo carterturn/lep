@@ -12,7 +12,7 @@ Example config files are provided, these will be better documented soon.
 Current Issues:
 ==============
 
-Password checking is not 100% accurate, certain false positives can occur.
+Speech recognition is not very accurate
 
 Installation:
 ============
