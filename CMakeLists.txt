@@ -4,6 +4,7 @@ project(lep)
 
 set(lep_MAJOR_VERSION 10)
 set(lep_MINOR_VERSION 1)
+set(lep_PATCH_VERSION 1)
 
 option(SERVER "Compile LEP Server" ON)
 option(SERVER_DEVICES "Compile LEP Server with Devices" ON)
