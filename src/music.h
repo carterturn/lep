@@ -28,10 +28,6 @@ public:
 	
 	std::string process(std::string data);
 	
-	char getkey(){
-		return 'm';
-	}
-	
 protected:
 	
 	std::string ip;

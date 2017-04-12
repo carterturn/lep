@@ -24,7 +24,7 @@
 class arduino : public device{
 
 public:
-	arduino(std::string port, int num_devices, std::string key);
+	arduino(std::vector<std::string> parameters);
 	~arduino();
 
 	int connect();

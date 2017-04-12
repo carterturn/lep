@@ -26,8 +26,11 @@
 
 using namespace std;
 
-raspberry_pi::raspberry_pi(vector<int> pins, string key) : pins(pins), device(pins.size(), key){
-	status = (int *) calloc(pins.size(), sizeof(int));
+raspberry_pi::raspberry_pi(vector<string> parameters) : device(parameters.size() - 2, parameters[0]){
+	for(int i = 2; i < parameters.size(); i++){
+		pins.push_back(atoi(parameters[i].c_str()));
+	}
+	status = new int[pins.size()];
 }
 
 raspberry_pi::~raspberry_pi(){
@@ -40,7 +43,7 @@ raspberry_pi::~raspberry_pi(){
 		unexport_file.close();
 	}
 
-	free(status);
+	delete status;
 }
 
 int raspberry_pi::connect(){

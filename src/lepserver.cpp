@@ -56,22 +56,12 @@ lepserver::lepserver(std::string password, std::string key, vector<configtuple> 
 
 #ifdef SERVER_DEVICES
 			if(server_action[1] == "arduino"){
-				// Default values
-				string arduino_port = server_action[2];
-				int arduino_pins = atoi(server_action[3].c_str());
-
-				device * a = new arduino(arduino_port, arduino_pins, server_action[0]);
+				device * a = new arduino(server_action);
 				actions.push_back(a);
 				devices.push_back(a);
 			}
 			else if(server_action[1] == "raspberry_pi"){
-				vector<int> pi_pins;
-
-				for(int i = 3; i < server_action.size(); i++){
-					pi_pins.push_back(atoi(server_action[i].c_str()));
-				}
-
-				device * r = new raspberry_pi(pi_pins, server_action[0]);
+				device * r = new raspberry_pi(server_action);
 				actions.push_back(r);
 				devices.push_back(r);
 			}

@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <vector> // Although not used here, subclasses basically must use vector
 #include "action.h"
 
 class device : public action{

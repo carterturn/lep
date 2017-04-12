@@ -36,14 +36,15 @@
 
 using namespace std;
 
-arduino::arduino(string port, int num_devices, string key) : port(port), device(num_devices, key){
-	status = (int *) calloc(num_devices, sizeof(int));
+arduino::arduino(vector<string> parameters) :
+	port(parameters[2]), device(atoi(parameters[3].c_str()), parameters[0]){
+		status = new int[num_devices];
 }
 
 arduino::~arduino(){
 	close(arduinofd);
 	
-	free(status);
+	delete status;
 }
 
 int arduino::connect(){

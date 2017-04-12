@@ -22,12 +22,11 @@
 #include "device.h"
 
 #include <fstream>
-#include <vector>
 
 class raspberry_pi : public device{
 
 public:
-	raspberry_pi(std::vector<int> pins, std::string key);
+	raspberry_pi(std::vector<std::string> parameters);
 	~raspberry_pi();
 
 	int connect();
