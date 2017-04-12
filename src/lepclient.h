@@ -35,7 +35,7 @@ public:
 	
 protected:
 	
-	std::string gettimepass();
+	std::string get_time_password();
 	std::string socketsendrecv(std::string message);
 
 	serverdata server;

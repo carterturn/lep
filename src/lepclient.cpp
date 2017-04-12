@@ -29,17 +29,18 @@ lepclient::lepclient(string password, string key, vector<configtuple> params) : 
 	config = params;
 }
 
-string lepclient::gettimepass(){
-	string timepass = "";
+string lepclient::get_time_password(){
+	string time_password = "";
 	
-	int bitmask = 0xff;
-	int shift = 0;
 	int now = chrono::system_clock::now().time_since_epoch() /  chrono::minutes(1);
-	for(int i = 0; i < password.length(); i++){
-		timepass += password[i] ^ (now & (bitmask << shift)) >> shift;
-		shift = (shift + 8) % 32;
+	for(int i = 0; i < 4; i++){
+		time_password = (char) (now & 0xFF) + time_password;
+		now = now >> 8;
 	}
-	return timepass;
+
+	time_password += password;
+	
+	return time_password;
 }
 
 string lepclient::socketsendrecv(string message){
@@ -47,7 +48,7 @@ string lepclient::socketsendrecv(string message){
 		return "ERROR";
 	}
 
-	s_write(gettimepass());
+	s_write(get_time_password());
 	string response = s_read();
 	if(response == "ok"){
 		s_write(message);

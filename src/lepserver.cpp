@@ -52,40 +52,40 @@ lepserver::lepserver(std::string password, std::string key, vector<configtuple> 
 	for(int i = 0; i < params.size(); i++){
 		if(params[i].param == "server_action"){
 
-			vector<string> action_values = split_string(params[i].value, ',');
+			vector<string> server_action = split_string(params[i].value, ',');
 
 #ifdef SERVER_DEVICES
-			if(action_values[1] == "arduino"){
+			if(server_action[1] == "arduino"){
 				// Default values
-				string arduino_port = action_values[2];
-				int arduino_devices = atoi(action_values[3].c_str());
+				string arduino_port = server_action[2];
+				int arduino_pins = atoi(server_action[3].c_str());
 
-				device * a = new arduino(arduino_port, arduino_devices, action_values[0]);
+				device * a = new arduino(arduino_port, arduino_pins, server_action[0]);
 				actions.push_back(a);
 				devices.push_back(a);
 			}
-			else if(action_values[1] == "raspberry_pi"){
+			else if(server_action[1] == "raspberry_pi"){
 				vector<int> pi_pins;
 
-				for(int i = 3; i < action_values.size(); i++){
-					pi_pins.push_back(atoi(action_values[i].c_str()));
+				for(int i = 3; i < server_action.size(); i++){
+					pi_pins.push_back(atoi(server_action[i].c_str()));
 				}
 
-				device * r = new raspberry_pi(pi_pins, action_values[0]);
+				device * r = new raspberry_pi(pi_pins, server_action[0]);
 				actions.push_back(r);
 				devices.push_back(r);
 			}
 #endif
 #ifdef SERVER_AUDIO
-			if(action_values[1] == "music"){
+			if(server_action[1] == "music"){
 				// Default values
-				string music_ip = action_values[2];
-				int music_port = atoi(action_values[3].c_str());
+				string music_ip = server_action[2];
+				int music_port = atoi(server_action[3].c_str());
 				
-				actions.push_back(new music(music_ip, music_port, action_values[0]));
+				actions.push_back(new music(music_ip, music_port, server_action[0]));
 			}
-			else if(action_values[1] == "speak"){
-				actions.push_back(new speak(action_values[0]));
+			else if(server_action[1] == "speak"){
+				actions.push_back(new speak(server_action[0]));
 			}
 #endif
 		}
@@ -101,20 +101,15 @@ lepserver::~lepserver(){
 	}
 }
 
-int lepserver::checktimepass(){
-	string timepass = s_read();
-	int times[4];
-	int shift = 0;
-	for(int i = 0; i < 4; i++){
-		times[i] = ((timepass[i] ^ password[i % password.length()]) & 0x000000ff) << shift;
-		shift = (shift + 8) % 32;
-	}
-	for(int i = 4; i < timepass.length(); i++){
-		if(times[i % 4] != ((timepass[i] ^ password[i % password.length()]) & 0x000000ff) << shift) times[i % 4] = 0;
-		shift = (shift + 8) % 32;
-	}
-	if(timepass.length() != password.length()) return false;
-	return abs(times[0]+times[1]+times[2]+times[3] - (chrono::system_clock::now().time_since_epoch() / chrono::minutes(1)));
+bool lepserver::check_password_timeout(){
+	string time_password = s_read();
+	int time = 0;
+	time = (time_password[0] << 24) + (time_password[1] << 16)  + (time_password[2] << 8) + time_password[3];
+	string attempted_password = time_password.erase(0, 4);
+	bool within_timeout = abs(time - (chrono::system_clock::now().time_since_epoch() / chrono::minutes(1)))
+		< message_timeout_minutes;
+	bool password_good = attempted_password == password;
+	return within_timeout && password_good;
 }
 
 int lepserver::init(){
@@ -132,8 +127,7 @@ int lepserver::run(){
 		// Wait for incomming message
 		getconn();
 		
-		int timedelta = checktimepass();
-		if(timedelta < 2){ // Verify password
+		if(check_password_timeout()){ // Verify password
 			s_write("ok");
 			// Get command
 			vector<string> command = split_string(s_read(), ';');
@@ -168,7 +162,6 @@ int lepserver::run(){
 			
 		}
 		else{
-			cout << "denied: " << timedelta << "\n";
 			s_write("denied");
 		}
 		

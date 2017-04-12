@@ -38,11 +38,12 @@ public:
 	
 protected:
 	
-	int checktimepass();
+	const int message_timeout_minutes = 2;
+	bool check_password_timeout();
+	
 	int port;
 	std::vector<action *> actions;
 	std::vector<device *> devices; // Note that these pointers are also in actions
-	int total_devices;
 	std::string process(std::string command);
 	bool mute_speech = false;
 };
