@@ -28,47 +28,53 @@
 
 using namespace std;
 
-music::music(string ip, int port, string key) : ip(ip), port(port), action(key){}
+music::music(vector<string> parameters) :
+	address(parameters[2]), port(atoi(parameters[3].c_str())), telnet_password(parameters[4] + "\n"),
+	action(parameters[0]){}
 
 string music::process(string data){
 	int error;
-	int msock;
+	int music_socket;
 	struct sockaddr_in addr;
 
-	if((msock = socket(AF_INET,SOCK_STREAM,0))<0){
+	if((music_socket = socket(AF_INET, SOCK_STREAM, 0)) < 0){
+		return "could not create socket to music";
 	}
 
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(port);
-	inet_aton(ip.c_str(), &addr.sin_addr);
+	inet_aton(address.c_str(), &addr.sin_addr);
 
-	error = connect(msock,(sockaddr*)&addr,sizeof(addr));
+	error = connect(music_socket, (sockaddr*)&addr ,sizeof(addr));
 	if(error!=0){
+		return "could not connect to music socket";
 	}
+
+	
+	send(music_socket, telnet_password.c_str(), telnet_password.length(), 0);
 	
 	data += "\n";
-	
-	if(data.length() > 8){
+	if(data.length() > 255){
 		bool done = true;
 		while(done){	
 			string temp = "";
-			for(int i = 0; i < 8; i++){
+			for(int i = 0; i < 255; i++){
 				temp += data[0];
 				if(data[0] == '\n'){
 					done = false;
-					i = 8;
+					i = 255;
 				}
 				data.erase(0,1);
 			}
-			send(msock,temp.c_str(),sizeof(data.c_str()),0);
+			send(music_socket, temp.c_str(), data.length(), 0);
 		}
 	}
 	else{
-		send(msock,data.c_str(),sizeof(data.c_str()),0);
+		send(music_socket, data.c_str(), data.length(), 0);
 	}
 	
-	shutdown(msock, 2);
-	close(msock);
+	shutdown(music_socket, 2);
+	close(music_socket);
 	
 	return "ok";
 }

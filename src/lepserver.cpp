@@ -68,11 +68,7 @@ lepserver::lepserver(std::string password, std::string key, vector<configtuple> 
 #endif
 #ifdef SERVER_AUDIO
 			if(server_action[1] == "music"){
-				// Default values
-				string music_ip = server_action[2];
-				int music_port = atoi(server_action[3].c_str());
-				
-				actions.push_back(new music(music_ip, music_port, server_action[0]));
+				actions.push_back(new music(server_action));
 			}
 			else if(server_action[1] == "speak"){
 				actions.push_back(new speak(server_action[0]));

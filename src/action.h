@@ -20,6 +20,7 @@
 #pragma once
 
 #include <iostream>
+#include <vector> // Although not used here, subclasses basically must use vector
 
 class action {
 

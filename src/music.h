@@ -24,12 +24,13 @@
 class music : public action{
 
 public:
-	music(std::string ip, int port, std::string key);
+	music(std::vector<std::string> parameters);
 	
 	std::string process(std::string data);
 	
 protected:
-	
-	std::string ip;
+
+	std::string telnet_password;
+	std::string address;
 	int port;
 };
