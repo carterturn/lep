@@ -39,7 +39,6 @@ string lepclient::get_time_password(){
 	}
 
 	time_password += password;
-	cout << time_password << "\n";
 	
 	return time_password;
 }

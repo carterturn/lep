@@ -95,9 +95,6 @@ bool lepserver::check_password_timeout(){
 		((unsigned char) time_password[2] << 8) |
 		((unsigned char) time_password[3]);
 	string attempted_password = time_password.erase(0, 4);
-	cout << attempted_password << "\n";
-	cout << time << "\n";
-	cout << (chrono::system_clock::now().time_since_epoch() / chrono::seconds(1)) << "\n";
 	bool within_timeout = abs(time - (chrono::system_clock::now().time_since_epoch() / chrono::seconds(1)))
 		< message_timeout_seconds;
 	bool password_good = attempted_password == password;
