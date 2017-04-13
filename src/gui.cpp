@@ -49,11 +49,29 @@ gui::gui(string password, string key, vector<configtuple> params) : lepclient(pa
 		endmultibutton_commands.push_back(getparam("gui_endmultibutton_"+its(i), params, ""));
 	}
 	
-	future = new futuregl(era);
+	fgl = new futuregl(era);
 }
 
 gui::~gui(){
-	delete future;
+	delete fgl;
+}
+
+void click_callback(GLFWwindow * window, int button, int action, int mods){
+	gui * gui_instance = (gui *) glfwGetWindowUserPointer(window);
+	if(action == GLFW_PRESS){
+		if(button == GLFW_MOUSE_BUTTON_LEFT){
+			double mouse_x, mouse_y;
+			glfwGetCursorPos(window, &mouse_x, &mouse_y);
+			int window_x, window_y;
+			glfwGetWindowSize(window, &window_x, &window_y);
+			mouse_y = window_y - mouse_y;
+			string buttonname = gui_instance->get_fgl()->getclicked((int) mouse_x, (int) mouse_y);
+			if(buttonname != ""){
+				gui_instance->run_button_command(buttonname);
+			}
+
+		}
+	}
 }
 
 int gui::init() {
@@ -73,41 +91,31 @@ int gui::init() {
 
 	glfwGetMonitorPos(monitor, &position_x, &position_y);
 	glfwSetWindowPos(window, position_x, position_y);
+	glfwSetWindowUserPointer(window, this);
+	glfwSetMouseButtonCallback(window, &click_callback);
 	
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(1);
 	glfwSetInputMode(window, GLFW_STICKY_MOUSE_BUTTONS, GL_TRUE);
 	glOrtho(0, window_x, 0, window_y, -1.0, 1.0);
 
-	future->load_config(configfile);
+	fgl->load_config(configfile);
 	
 	return 0;
 }
 
 int gui::run(){
 	cout << "Running\n";
+	bool just_clicked = false; // required due to difficulties with callbacks and classes
 	while(!glfwWindowShouldClose(window)){
 		update_multibuttons();
 		
-		glfwGetWindowSize(window, &window_x, &window_y);
-		
-		if(glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS){
-			double mouse_x = 0;
-			double mouse_y = 0;
-			glfwGetCursorPos(window, &mouse_x, &mouse_y);
-			mouse_y = window_y - mouse_y;
-			string buttonname = future->getclicked((int) mouse_x, (int) mouse_y);
-			if(buttonname != ""){
-				run_button_command(buttonname);
-			}
-		}
-		
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		future->draw();
+		fgl->draw();
 		
 		glfwSwapBuffers(window);
-		usleep(100000);
+		usleep(50000);
 		glfwWaitEvents();
 	}
 	
@@ -130,11 +138,11 @@ void gui::update_multibuttons(){
 				if(desired_interface[0] == status_parts[0]){
 					int device_idx = atoi(desired_interface[1].c_str());
 					vector<string> device_statuses = split_string(status_parts[1], ',');
-					if(device_idx > device_statuses.size()){
+					if(device_idx >= device_statuses.size()){
 						// Server did not return correctly, die
 						return;
 					}
-					future->setmultibutton(i, atoi(device_statuses[device_idx].c_str()));
+					fgl->setmultibutton(i, atoi(device_statuses[device_idx].c_str()));
 				}
 			}
 		}
@@ -150,11 +158,11 @@ void gui::update_multibuttons(){
 				if(desired_interface[0] == status_parts[0]){
 					int device_idx = atoi(desired_interface[1].c_str());
 					vector<string> device_statuses = split_string(status_parts[1], ',');
-					if(device_idx > device_statuses.size()){
+					if(device_idx >= device_statuses.size()){
 						// Server did not return correctly, die
 						return;
 					}
-					future->setmultibutton(i, atoi(device_statuses[device_idx].c_str()), true);
+					fgl->setmultibutton(i, atoi(device_statuses[device_idx].c_str()), true);
 				}
 			}
 		}
@@ -163,13 +171,12 @@ void gui::update_multibuttons(){
 
 // Runs commands from buttons
 void gui::run_button_command(string buttonname){
-	for(int i = 0; i < config.size(); i++){
-		if(config[i].param == "gui_button_"+buttonname){
-			string command = config[i].value;
+	string command = getparam("gui_button_"+buttonname, config, "");
+	if(command != "") socketsendrecv(command);
+}
 
-			if(command != "") socketsendrecv(command);
-		}
-	}
+futuregl * gui::get_fgl(){
+	return fgl;
 }
 
 int main(int argc, char* argv[]){
