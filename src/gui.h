@@ -33,11 +33,14 @@ public:
 	
 	int run();
 	
+	void run_button_command(std::string buttonname); // Public so GLFW can use it
+
+	futuregl * get_fgl();
 protected:
 
 	
 	GLFWwindow * window;
-	futuregl * future;
+	futuregl * fgl;
 	std::string configfile;
 
 	int window_x;
@@ -46,6 +49,5 @@ protected:
 	std::vector<std::string> multibutton_commands;
 	std::vector<std::string> endmultibutton_commands;
 	
-	void run_button_command(std::string buttonname);	
 	void update_multibuttons();
 };
