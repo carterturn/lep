@@ -34,7 +34,7 @@ int speech::init(){
 
 	rv = recognizer.init(getparam("speech_dict", config, "lib/leplm/lep.dict"),
 			     getparam("speech_hmm", config, "lib/lephmm"),
-			     getparam("speech_jsgf", config, "lib/leplm/lep.jsgf"), true, true);
+			     getparam("speech_jsgf", config, "lib/leplm/lep.jsgf"), false, true);
 
 	recognizer.pause();
 	
