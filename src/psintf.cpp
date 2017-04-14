@@ -29,24 +29,26 @@
 
 using namespace std;
 
-int psintf::init(string dict, string hmm, string lm, bool vps, bool v){
+int psintf::init(string dict, string hmm, string jsgf, bool ps_print, bool print){
 	cmd_ln_t *config;
 	
-	if(!vps) config = cmd_ln_init(NULL, ps_args(), FALSE,
+	if(!ps_print) config = cmd_ln_init(NULL, ps_args(), FALSE,
 				      "-hmm", hmm.c_str(),
-				      "-lm", lm.c_str(),
+				      "-jsgf", jsgf.c_str(),
 				      "-dict", dict.c_str(),
 				      "-logfn", "/dev/null", NULL);
 	else config = cmd_ln_init(NULL, ps_args(), FALSE,
 				  "-hmm", hmm.c_str(),
-				  "-lm", lm.c_str(),
+				  "-jsgf", jsgf.c_str(),
 				  "-dict", dict.c_str(), NULL);
 	if(config == NULL) return 1;
-	
+
 	ps = ps_init(config);
 	if(ps == NULL) return 2;
 	
-	verb = v;
+	cycles_since_calib = 100;
+	resume();
+	this->print = print;
 	
 	return 0;
 }
@@ -89,11 +91,13 @@ string psintf::getword(int thresh){
 
 	ps_end_utt(ps);
 
-	string word = ps_get_hyp(ps, NULL, NULL);
-
-	if(verb) cout << word << "\n";
-	
-	return word;
+	int score;
+	const char * hyp_word = ps_get_hyp(ps, &score, NULL);
+	if(hyp_word != NULL && score > MINIMUM_SCORE){
+		if(print) cout << hyp_word << "\t" << score << "\n";
+		return string(hyp_word);
+	}
+	return "";
 }
 
 int psintf::pause(){

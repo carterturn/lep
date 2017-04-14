@@ -25,7 +25,7 @@
 class psintf {
 
 public:
-	int init(std::string dict, std::string lm, std::string hmm, bool psv = false, bool v = false);
+	int init(std::string dict, std::string jsgf, std::string hmm, bool ps_print = false, bool print = false);
 	
 	std::string getword(int thresh=7);
 	
@@ -39,8 +39,10 @@ private:
 	cont_ad_t * cont;
 	int cycles_since_calib;
 	ps_decoder_t *ps;
-	bool verb;
+	bool print;
 
 	// How long to wait during silence until utterance is finished
-	const int SILENCE_DELAY = 4000; // In samples
+	const int SILENCE_DELAY = 2000; // In samples
+	// Required recognition confidence
+	const int MINIMUM_SCORE = -3500;
 };

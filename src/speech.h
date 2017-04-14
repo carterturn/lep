@@ -34,8 +34,5 @@ speech(std::string password, std::string key, std::vector<configtuple> params) :
 
 protected:
 	
-	std::string recognize(int mode);
-	
-	psintf detect;
-	psintf action;
+	psintf recognizer;
 };
