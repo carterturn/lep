@@ -34,10 +34,8 @@ int speech::init(){
 
 	rv = recognizer.init(getparam("speech_dict", config, "lib/leplm/lep.dict"),
 			     getparam("speech_hmm", config, "lib/lephmm"),
-			     getparam("speech_jsgf", config, "lib/leplm/lep.jsgf"), false, true);
+			     getparam("speech_jsgf", config, "lib/leplm/lep.jsgf"));
 
-	recognizer.pause();
-	
 	return rv;
 }
 
@@ -46,8 +44,6 @@ bool is_space(char c){
 }
 
 int speech::run(){
-	
-	recognizer.resume();
 	bool running = true;
 	
 	bool mute = false;
@@ -65,9 +61,11 @@ int speech::run(){
 		}
 		else{
 			string word = recognizer.getword();
+
+			socketsendrecv("a;d");
+			
 			replace_if(word.begin(), word.end(), is_space, '_');
 			if(word == "" || word[0] == '#') cout << "Speech Error: " << word << "\n";
-			socketsendrecv("a;d");
 
 			bool commanded = false;
 			for(int i = 0; i < config.size(); i++){
