@@ -19,51 +19,33 @@
 
 #include <iostream>
 #include <chrono>
+#include <algorithm>
 #include "speech.h"
 #include "ct_time.h"
 
 using namespace std;
 
 speech::~speech(){
-	detect.clean();
-	action.clean();
+	recognizer.clean();
 }
 
 int speech::init(){
 	int rv = 0;
 
-	string hmm = getparam("speech_hmm", config, "lib/lephmm");
-	string lm = getparam("speech_lm", config, "lib/leplm/lep.lm.DMP");
-	
-	rv = detect.init(getparam("speech_detect_dict", config, "lib/leplm/detect.dic"), hmm, lm, false, true);
-	rv += 10*action.init(getparam("speech_action_dict", config, "lib/leplm/action.dic"), hmm, lm, false, true);
+	rv = recognizer.init(getparam("speech_dict", config, "lib/leplm/lep.dict"),
+			     getparam("speech_hmm", config, "lib/lephmm"),
+			     getparam("speech_jsgf", config, "lib/leplm/lep.jsgf"));
 
-	detect.pause();
-	action.pause();
-	
 	return rv;
 }
 
-string speech::recognize(int mode){
-	
-	string word = "NULL";
-	
-	if(mode == 0){
-		word = detect.getword(5);
-	}
-	else if(mode == 1){
-		word = action.getword(4);
-	}
-	
-	return word;
+bool is_space(char c){
+	return c == ' ';
 }
 
 int speech::run(){
-	
-	detect.resume();
 	bool running = true;
 	
-	int mode = 0;
 	bool mute = false;
 	while(running){
 		
@@ -71,34 +53,26 @@ int speech::run(){
 		else mute = false;
 		
 		if(!mute){
-			if(mode == 0) socketsendrecv("a;a");
-			else if(mode == 1) socketsendrecv("a;b");
+			socketsendrecv("a;b");
 		}
 		
 		if(mute){
 			csleep(1);
 		}
 		else{
-			string word = recognize(mode);
-			if(word == "NULL" || word[0] == 'e') cout << "Speech Error: " << word << "\n";
+			string word = recognizer.getword();
+
 			socketsendrecv("a;d");
+			
+			replace_if(word.begin(), word.end(), is_space, '_');
+			if(word == "" || word[0] == '#') cout << "Speech Error: " << word << "\n";
 
 			bool commanded = false;
 			for(int i = 0; i < config.size(); i++){
 				if(config[i].param == "speech_word_"+word){
 					string command = config[i].value;
 					commanded = true;
-					if(command == "detect"){
-						action.pause();
-						mode = 0;
-						detect.resume();
-					}
-					else if(command == "action"){
-						detect.pause();
-						mode = 1;
-						action.resume();
-					}
-					else if(command != "") socketsendrecv(command);
+					if(command != "") socketsendrecv(command);
 					else commanded = false;
 				}
 			}

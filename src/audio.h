@@ -19,20 +19,13 @@
 
 #pragma once
 
-#include "lepclient.h"
-#include "psintf.h"
+#include <pulse/simple.h>
 
-class speech : public lepclient{
 
-public:
-speech(std::string password, std::string key, std::vector<configtuple> params) : recognizer(false, false), lepclient(password, key, params){}
-	~speech();
+namespace audio{
+	int read(int16_t *buffer, int size);
+	//int write(int16_t *buffer, int size);
 	
-	int init();
-	
-	int run();
-
-protected:
-	
-	psintf recognizer;
+	int resume();
+	int pause();
 };

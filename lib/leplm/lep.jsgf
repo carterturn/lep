@@ -1,0 +1,8 @@
+#JSGF V1.0;
+
+grammar lep_grammar;
+
+public <command> = <name> <request>;
+<name> = computer | lep;
+<request> = lights | displays | stereo | <music>;
+<music> = music (play | next | previous);

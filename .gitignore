@@ -5,3 +5,4 @@ gui
 text
 build
 *.conf
+lib/cmusphinx-en-us-5.2
