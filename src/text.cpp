@@ -25,39 +25,39 @@
 using namespace std;
 
 int text::init(){
-	// Really no way for this to fail
-	return 0;
+    // Really no way for this to fail
+    return 0;
 }
 
 int text::run(){
-	
-	string message = "";
-	cout << "Please enter command to send to LEP\nEnter 'quit' to close\n\n>>";
-	getline(cin, message);
-	while(message != "quit"){
-		cout << socketsendrecv(message) << "\n";
-		cout << ">>";
-		getline(cin, message);
-	}
-	
+    
+    string message = "";
+    cout << "Please enter command to send to LEP\nEnter 'quit' to close\n\n>>";
+    getline(cin, message);
+    while(message != "quit"){
+        cout << socketsendrecv(message) << "\n";
+        cout << ">>";
+        getline(cin, message);
+    }
+    
 }
 
 int main(int argc, char* argv[]){
-	string config = "lep.conf";
-	
-	if(argc > 1) config = argv[1];
+    string config = "lep.conf";
+    
+    if(argc > 1) config = argv[1];
 
-	string password;
-	string key;
-	vector<configtuple> params = getconfig(config, password, key);
+    string password;
+    string key;
+    vector<configtuple> params = getconfig(config, password, key);
 
-	text t(password, key, params);
+    text t(password, key, params);
 
-	int code = t.init();
-	if(code != 0){
-		cout << "ERROR: " << code << "\n";
-		return code;
-	}
+    int code = t.init();
+    if(code != 0){
+        cout << "ERROR: " << code << "\n";
+        return code;
+    }
 
-	return t.run();
+    return t.run();
 }

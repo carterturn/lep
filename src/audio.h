@@ -23,9 +23,9 @@
 
 
 namespace audio{
-	int read(int16_t *buffer, int size);
-	//int write(int16_t *buffer, int size);
-	
-	int resume();
-	int pause();
+    int read(int16_t *buffer, int size);
+    //int write(int16_t *buffer, int size);
+    
+    int resume();
+    int pause();
 };

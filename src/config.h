@@ -23,8 +23,8 @@
 #include <vector>
 
 struct configtuple{
-	std::string param;
-	std::string value;
+    std::string param;
+    std::string value;
 };
 
 // Returns a configured module based on the config given at configpath

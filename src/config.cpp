@@ -25,47 +25,47 @@
 using namespace std;
 
 vector<configtuple> getconfig(string configpath, string & password, string & key){
-	
-	fstream configfile;
-	configfile.open(configpath);
-	
-	vector<configtuple> config;
-	
-	regex trimmer("(^[ \t]*)(.*[^ \t])([\t ]*$)");
-	regex tupledetect("^([^=]*)([ \t=]*)([^=]*)$");
-	
-	while(!configfile.eof()){
-		string line;
-		getline(configfile, line);
-		
-		line = regex_replace(line, trimmer, "$2");
-		
-		if(!(line.substr(0, 2) == "//") && line != ""){
-			configtuple parameter;
-			parameter.param = regex_replace(regex_replace(line, tupledetect, "$1"), trimmer, "$2");
-			parameter.value = regex_replace(regex_replace(line, tupledetect, "$3"), trimmer, "$2");
+    
+    fstream configfile;
+    configfile.open(configpath);
+    
+    vector<configtuple> config;
+    
+    regex trimmer("(^[ \t]*)(.*[^ \t])([\t ]*$)");
+    regex tupledetect("^([^=]*)([ \t=]*)([^=]*)$");
+    
+    while(!configfile.eof()){
+        string line;
+        getline(configfile, line);
+        
+        line = regex_replace(line, trimmer, "$2");
+        
+        if(!(line.substr(0, 2) == "//") && line != ""){
+            configtuple parameter;
+            parameter.param = regex_replace(regex_replace(line, tupledetect, "$1"), trimmer, "$2");
+            parameter.value = regex_replace(regex_replace(line, tupledetect, "$3"), trimmer, "$2");
 
-			cout << parameter.param << " set to " << parameter.value << "\n";
-			config.push_back(parameter);
-		}
-	}
-	
-	
-	configfile.close();
-	
-	vector<configtuple> moduleconfig;
-	
-	for(int i = 0; i < config.size(); i++){
-		if(config[i].param == "password"){
-			password = config[i].value;
-		}
-		else if(config[i].param == "key"){
-			key = config[i].value;
-		}
-		else{
-			moduleconfig.push_back(config[i]);
-		}
-	}
-	
-	return moduleconfig;
+            cout << parameter.param << " set to " << parameter.value << "\n";
+            config.push_back(parameter);
+        }
+    }
+    
+    
+    configfile.close();
+    
+    vector<configtuple> moduleconfig;
+    
+    for(int i = 0; i < config.size(); i++){
+        if(config[i].param == "password"){
+            password = config[i].value;
+        }
+        else if(config[i].param == "key"){
+            key = config[i].value;
+        }
+        else{
+            moduleconfig.push_back(config[i]);
+        }
+    }
+    
+    return moduleconfig;
 }

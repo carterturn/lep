@@ -25,12 +25,12 @@
 class action {
 
 public:
-	action(std::string key);
-	virtual std::string process(std::string data)=0;
-	
-	std::string getkey();
+    action(std::string key);
+    virtual std::string process(std::string data)=0;
+    
+    std::string getkey();
 
 private:
-	// Child class should not be using key
-	std::string key;
+    // Child class should not be using key
+    std::string key;
 };

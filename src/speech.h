@@ -26,13 +26,13 @@ class speech : public lepclient{
 
 public:
 speech(std::string password, std::string key, std::vector<configtuple> params) : recognizer(false, false), lepclient(password, key, params){}
-	~speech();
-	
-	int init();
-	
-	int run();
+    ~speech();
+    
+    int init();
+    
+    int run();
 
 protected:
-	
-	psintf recognizer;
+    
+    psintf recognizer;
 };

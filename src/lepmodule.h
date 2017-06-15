@@ -30,18 +30,18 @@
 class lepmodule {
 
 public:
-	lepmodule(std::string password, std::string key);
-	
-	// Initializer is seperate as some things only need to be done once
-	virtual int init() = 0;
-	
-	// Run is the main loop containing a listening socket or information collection and transmission
-	virtual int run() = 0;
+    lepmodule(std::string password, std::string key);
+    
+    // Initializer is seperate as some things only need to be done once
+    virtual int init() = 0;
+    
+    // Run is the main loop containing a listening socket or information collection and transmission
+    virtual int run() = 0;
 
 protected:
-	
-	std::string getparam(std::string paramname, std::vector<configtuple> params, std::string defaultval);
-	
-	std::string password;
-	std::string key;
+    
+    std::string getparam(std::string paramname, std::vector<configtuple> params, std::string defaultval);
+    
+    std::string password;
+    std::string key;
 };

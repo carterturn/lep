@@ -37,70 +37,70 @@
 using namespace std;
 
 arduino::arduino(vector<string> parameters) :
-	port(parameters[2]), device(atoi(parameters[3].c_str()), parameters[0]){
-		status = new int[num_devices];
+    port(parameters[2]), device(atoi(parameters[3].c_str()), parameters[0]){
+    status = new int[num_devices];
 }
 
 arduino::~arduino(){
-	close(arduinofd);
-	
-	delete status;
+    close(arduinofd);
+    
+    delete status;
 }
 
 int arduino::connect(){
-	struct termios toptions;
+    struct termios toptions;
 
-	arduinofd = open(port.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
-	if (arduinofd == -1){
-		return 1;
-	}
-	
-	if(tcgetattr(arduinofd, &toptions) < 0){
-		return 2;
-	}
-	speed_t brate = B9600; //Baud rate to 9600
-	cfsetispeed(&toptions, brate);
-	cfsetospeed(&toptions, brate);
-	
-	toptions.c_cflag &= ~PARENB;
-	toptions.c_cflag &= ~CSTOPB;
-	toptions.c_cflag &= ~CSIZE;
-	toptions.c_cflag |= CS8;
-	toptions.c_cflag &= ~CRTSCTS;
-	toptions.c_cflag |= CREAD | CLOCAL;
-	toptions.c_iflag &= ~(IXON | IXOFF | IXANY);
-	toptions.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);
-	toptions.c_oflag &= ~OPOST;
+    arduinofd = open(port.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
+    if (arduinofd == -1){
+        return 1;
+    }
+    
+    if(tcgetattr(arduinofd, &toptions) < 0){
+        return 2;
+    }
+    speed_t brate = B9600; //Baud rate to 9600
+    cfsetispeed(&toptions, brate);
+    cfsetospeed(&toptions, brate);
+    
+    toptions.c_cflag &= ~PARENB;
+    toptions.c_cflag &= ~CSTOPB;
+    toptions.c_cflag &= ~CSIZE;
+    toptions.c_cflag |= CS8;
+    toptions.c_cflag &= ~CRTSCTS;
+    toptions.c_cflag |= CREAD | CLOCAL;
+    toptions.c_iflag &= ~(IXON | IXOFF | IXANY);
+    toptions.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);
+    toptions.c_oflag &= ~OPOST;
 
-	toptions.c_cc[VMIN]  = 0;
-	toptions.c_cc[VTIME] = 20;
-	
-	if(tcsetattr(arduinofd, TCSANOW, &toptions) < 0){
-		return 4;
-	}
+    toptions.c_cc[VMIN]  = 0;
+    toptions.c_cc[VTIME] = 20;
+    
+    if(tcsetattr(arduinofd, TCSANOW, &toptions) < 0){
+        return 4;
+    }
 
-	return 0;
+    return 0;
 }
 
 string arduino::process(string data){
-	data += ";"; // Arduino messages ';' terminated (but the server does not know this)
-	if(write(arduinofd, data.c_str(), data.length()) != data.length()){
-		return "could not access arduino";
-	}
+    data += ";"; // Arduino messages ';' terminated (but the server does not know this)
+    if(write(arduinofd, data.c_str(), data.length()) != data.length()){
+        return "could not access arduino";
+    }
 
-	// Status will always be returned by the Arduino
-	string response = "";
-	bool reading = true;
-	while(reading){
-		char respcstr[8];
-		bzero(respcstr, 8);
-		int size = read(arduinofd, respcstr, 8);
-		reading = !(size < 8);
-		for(int i = 0; i < size; i++){
-			if(respcstr[i] == '\n') break;
-			response += respcstr[i];
-		}
-	}
-	
-	return response;
+    // Status will always be returned by the Arduino
+    string response = "";
+    bool reading = true;
+    while(reading){
+        char respcstr[8];
+        bzero(respcstr, 8);
+        int size = read(arduinofd, respcstr, 8);
+        reading = !(size < 8);
+        for(int i = 0; i < size; i++){
+            if(respcstr[i] == '\n') break;
+            response += respcstr[i];
+        }
+    }
+    
+    return response;
 }

@@ -26,13 +26,13 @@
 class speak : public action/*ESP Interface. Spooky!*/ {
 
 public:
-	speak(std::string key);
-	~speak();
-	
-	std::string process(std::string data);
-	
-	char getkey(){
-		return 's';
-	}
-	
+    speak(std::string key);
+    ~speak();
+    
+    std::string process(std::string data);
+    
+    char getkey(){
+        return 's';
+    }
+    
 };

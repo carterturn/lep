@@ -25,21 +25,21 @@
 using namespace std;
 
 int main(int argc, char* argv[]){
-	
-	string config = "lep.conf";
-	
-	if(argc > 1) config = argv[1];
-	
-	lepmodule *m = getmodule(config);
-	
-	int code = m->init();
+    
+    string config = "lep.conf";
+    
+    if(argc > 1) config = argv[1];
+    
+    lepmodule *m = getmodule(config);
+    
+    int code = m->init();
 
-	if(code != 0){
-		cout << "ERROR: " << code << "\n";
-		return code;
-	}
-	
-	int retval = m->run();
-	
-	return retval;
+    if(code != 0){
+        cout << "ERROR: " << code << "\n";
+        return code;
+    }
+    
+    int retval = m->run();
+    
+    return retval;
 }

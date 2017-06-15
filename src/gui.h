@@ -26,28 +26,28 @@
 class gui : public lepclient{
 
 public:
-	gui(std::string password, std::string key, std::vector<configtuple> params);
-	~gui();
-	
-	int init();
-	
-	int run();
-	
-	void run_button_command(std::string buttonname); // Public so GLFW can use it
+    gui(std::string password, std::string key, std::vector<configtuple> params);
+    ~gui();
+    
+    int init();
+    
+    int run();
+    
+    void run_button_command(std::string buttonname); // Public so GLFW can use it
 
-	futuregl * get_fgl();
+    futuregl * get_fgl();
 protected:
 
-	
-	GLFWwindow * window;
-	futuregl * fgl;
-	std::string configfile;
+    
+    GLFWwindow * window;
+    futuregl * fgl;
+    std::string configfile;
 
-	int window_x;
-	int window_y;
+    int window_x;
+    int window_y;
 
-	std::vector<std::string> multibutton_commands;
-	std::vector<std::string> endmultibutton_commands;
-	
-	void update_multibuttons();
+    std::vector<std::string> multibutton_commands;
+    std::vector<std::string> endmultibutton_commands;
+    
+    void update_multibuttons();
 };

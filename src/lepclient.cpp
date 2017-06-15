@@ -20,42 +20,39 @@
 #include "lepclient.h"
 
 #include <chrono>
+#include <sstream>
 
 using namespace std;
 
 lepclient::lepclient(string password, string key, vector<configtuple> params) : lepmodule(password, key), ctclientsecure(key){
-	server.ip = getparam("server", params, "127.0.0.1");
-	server.port = atoi(getparam("server_port", params, "12516").c_str());
-	config = params;
+    server.ip = getparam("server", params, "127.0.0.1");
+    server.port = atoi(getparam("server_port", params, "12516").c_str());
+    config = params;
 }
 
 string lepclient::get_time_password(){
-	string time_password = "";
-	
-	int now = chrono::system_clock::now().time_since_epoch() /  chrono::seconds(1);
-	for(int i = 0; i < 4; i++){
-		time_password = (char) (now & 0xFF) + time_password;
-		now = now >> 8;
-	}
+    unsigned int now = chrono::system_clock::now().time_since_epoch() /  chrono::seconds(1);
 
-	time_password += password;
-	
-	return time_password;
+    stringstream time;
+    time << hex << now;
+    time << password;
+    
+    return time.str();
 }
 
 string lepclient::socketsendrecv(string message){
-	if(create(server.ip, server.port) < 0){
-		return "ERROR";
-	}
+    if(create(server.ip, server.port) < 0){
+        return "ERROR";
+    }
 
-	s_write(get_time_password());
-	string response = s_read();
-	if(response == "ok"){
-		s_write(message);
-		response = s_read();
-	}
-	
-	c_close();
-	
-	return response;
+    s_write(get_time_password());
+    string response = s_read();
+    if(response == "ok"){
+        s_write(message);
+        response = s_read();
+    }
+    
+    c_close();
+    
+    return response;
 }

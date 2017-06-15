@@ -24,18 +24,18 @@
 class arduino : public device{
 
 public:
-	arduino(std::vector<std::string> parameters);
-	~arduino();
+    arduino(std::vector<std::string> parameters);
+    ~arduino();
 
-	int connect();
-	
-	std::string process(std::string data);
-		
+    int connect();
+    
+    std::string process(std::string data);
+        
 protected:
-	int arduinofd;
-	int * status;
-	
+    int arduinofd;
+    int * status;
+    
 private:
-	std::string port;
+    std::string port;
 
 };

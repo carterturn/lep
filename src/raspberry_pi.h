@@ -26,15 +26,15 @@
 class raspberry_pi : public device{
 
 public:
-	raspberry_pi(std::vector<std::string> parameters);
-	~raspberry_pi();
+    raspberry_pi(std::vector<std::string> parameters);
+    ~raspberry_pi();
 
-	int connect();
+    int connect();
 
-	std::string process(std::string data);
+    std::string process(std::string data);
 
 protected:
-	std::vector<int> pins;
-	int * status;
+    std::vector<int> pins;
+    int * status;
 };
 

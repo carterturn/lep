@@ -28,23 +28,23 @@
 class lepserver : public lepmodule, private ctserversecure {
 
 public:
-	lepserver(std::string password, std::string key, std::vector<configtuple> params);
-	~lepserver();
-	
-	int init();
-	
-	int run();
-	
-	
+    lepserver(std::string password, std::string key, std::vector<configtuple> params);
+    ~lepserver();
+    
+    int init();
+    
+    int run();
+    
+    
 protected:
-	
-	const int message_timeout_seconds = 30;
-	bool check_password_timeout();
-	
-	int port;
-	std::vector<action *> actions;
-	std::vector<device *> devices; // Note that these pointers are also in actions
-	std::string process(std::string command);
-	bool mute_speech = false;
+    
+    const int message_timeout_seconds = 30;
+    bool check_password_timeout();
+    
+    int port;
+    std::vector<action *> actions;
+    std::vector<device *> devices; // Note that these pointers are also in actions
+    std::string process(std::string command);
+    bool mute_speech = false;
 };
 

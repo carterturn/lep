@@ -31,7 +31,7 @@ endif(SERVER)
 
 # Clients
 if(SPEECH OR GUI OR TEXT)
-  add_library(client lepmodule.cpp lepclient.cpp ct_time.cpp)
+  add_library(client lepmodule.cpp lepclient.cpp ct_time.cpp util.cpp)
 endif(SPEECH OR GUI OR TEXT)
 
 # Speech

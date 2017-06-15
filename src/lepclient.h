@@ -24,20 +24,20 @@
 #include <ctclientsecure.h>
 
 struct serverdata {
-	std::string ip;
-	int port;
+    std::string ip;
+    int port;
 };
 
 class lepclient : public lepmodule, private ctclientsecure {
-	
+    
 public:
-	lepclient(std::string password, std::string key, std::vector<configtuple> params);
-	
+    lepclient(std::string password, std::string key, std::vector<configtuple> params);
+    
 protected:
-	
-	std::string get_time_password();
-	std::string socketsendrecv(std::string message);
+    
+    std::string get_time_password();
+    std::string socketsendrecv(std::string message);
 
-	serverdata server;
-	std::vector<configtuple> config;
+    serverdata server;
+    std::vector<configtuple> config;
 };

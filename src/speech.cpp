@@ -26,79 +26,79 @@
 using namespace std;
 
 speech::~speech(){
-	recognizer.clean();
+    recognizer.clean();
 }
 
 int speech::init(){
-	int rv = 0;
+    int rv = 0;
 
-	rv = recognizer.init(getparam("speech_dict", config, "lib/leplm/lep.dict"),
-			     getparam("speech_hmm", config, "lib/lephmm"),
-			     getparam("speech_jsgf", config, "lib/leplm/lep.jsgf"));
+    rv = recognizer.init(getparam("speech_dict", config, "lib/leplm/lep.dict"),
+                 getparam("speech_hmm", config, "lib/lephmm"),
+                 getparam("speech_jsgf", config, "lib/leplm/lep.jsgf"));
 
-	return rv;
+    return rv;
 }
 
 bool is_space(char c){
-	return c == ' ';
+    return c == ' ';
 }
 
 int speech::run(){
-	bool running = true;
-	
-	bool mute = false;
-	while(running){
-		
-		if(socketsendrecv("c;check_mute") == "mute") mute = true;
-		else mute = false;
-		
-		if(!mute){
-			socketsendrecv("a;b");
-		}
-		
-		if(mute){
-			csleep(1);
-		}
-		else{
-			string word = recognizer.getword();
+    bool running = true;
+    
+    bool mute = false;
+    while(running){
+        
+        if(socketsendrecv("c;check_mute") == "mute") mute = true;
+        else mute = false;
+        
+        if(!mute){
+            socketsendrecv("a;b");
+        }
+        
+        if(mute){
+            csleep(1);
+        }
+        else{
+            string word = recognizer.getword();
 
-			socketsendrecv("a;d");
-			
-			replace_if(word.begin(), word.end(), is_space, '_');
-			if(word == "" || word[0] == '#') cout << "Speech Error: " << word << "\n";
+            socketsendrecv("a;d");
+            
+            replace_if(word.begin(), word.end(), is_space, '_');
+            if(word == "" || word[0] == '#') cout << "Speech Error: " << word << "\n";
 
-			bool commanded = false;
-			for(int i = 0; i < config.size(); i++){
-				if(config[i].param == "speech_word_"+word){
-					string command = config[i].value;
-					commanded = true;
-					if(command != "") socketsendrecv(command);
-					else commanded = false;
-				}
-			}
-			if(!commanded) cout << "No command registered for: " << word << "\n";
-		}
-	}
-	
-	return 0;
+            bool commanded = false;
+            for(int i = 0; i < config.size(); i++){
+                if(config[i].param == "speech_word_"+word){
+                    string command = config[i].value;
+                    commanded = true;
+                    if(command != "") socketsendrecv(command);
+                    else commanded = false;
+                }
+            }
+            if(!commanded) cout << "No command registered for: " << word << "\n";
+        }
+    }
+    
+    return 0;
 }
 
 int main(int argc, char* argv[]){
-	string config = "lep.conf";
-	
-	if(argc > 1) config = argv[1];
+    string config = "lep.conf";
+    
+    if(argc > 1) config = argv[1];
 
-	string password;
-	string key;
-	vector<configtuple> params = getconfig(config, password, key);
+    string password;
+    string key;
+    vector<configtuple> params = getconfig(config, password, key);
 
-	speech s(password, key, params);
+    speech s(password, key, params);
 
-	int code = s.init();
-	if(code != 0){
-		cout << "ERROR: " << code << "\n";
-		return code;
-	}
+    int code = s.init();
+    if(code != 0){
+        cout << "ERROR: " << code << "\n";
+        return code;
+    }
 
-	return s.run();
+    return s.run();
 }

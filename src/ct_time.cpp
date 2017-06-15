@@ -27,33 +27,33 @@
 using namespace std;
 
 void cusleep(int usec){
-	timespec ts1, ts2;
-	if(usec > 1000000){
-		ts1.tv_sec = (int) usec/1000000;
-		usec = usec - ts1.tv_sec*1000000;
-	}
-	ts1.tv_nsec = usec*1000;
-	nanosleep(&ts1, &ts2);
+    timespec ts1, ts2;
+    if(usec > 1000000){
+        ts1.tv_sec = (int) usec/1000000;
+        usec = usec - ts1.tv_sec*1000000;
+    }
+    ts1.tv_nsec = usec*1000;
+    nanosleep(&ts1, &ts2);
 }
 
 void csleep(int sec){
-	timespec ts1, ts2;
-	ts1.tv_sec = sec;
-	ts1.tv_nsec = 0;
-	nanosleep(&ts1, &ts2);
+    timespec ts1, ts2;
+    ts1.tv_sec = sec;
+    ts1.tv_nsec = 0;
+    nanosleep(&ts1, &ts2);
 }
 
 int getHour(){ //Returns hour of day
-	
-	time_t rawtime;
-	struct tm * timeinfo;
+    
+    time_t rawtime;
+    struct tm * timeinfo;
 
-	time (&rawtime);
-	timeinfo = localtime (&rawtime);
+    time (&rawtime);
+    timeinfo = localtime (&rawtime);
 
-	string asc_time = asctime(timeinfo);
-	
-	int hour = atoi(asc_time.substr(11, 2).c_str());
-	
-	return hour;
+    string asc_time = asctime(timeinfo);
+    
+    int hour = atoi(asc_time.substr(11, 2).c_str());
+    
+    return hour;
 }

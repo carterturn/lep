@@ -22,16 +22,16 @@
 using namespace std;
 
 string lepmodule::getparam(string paramname, vector<configtuple> params, string defaultval){
-	for(int i = 0; i < params.size(); i++){
-		if(params[i].param == paramname){
-			return params[i].value;
-		}
-	}
-	
-	return defaultval;
+    for(int i = 0; i < params.size(); i++){
+        if(params[i].param == paramname){
+            return params[i].value;
+        }
+    }
+    
+    return defaultval;
 }
 
 lepmodule::lepmodule(string pw, string k){
-	password = pw;
-	key = k;
+    password = pw;
+    key = k;
 }

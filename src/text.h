@@ -25,9 +25,9 @@ class text : public lepclient {
 
 public:
 text(std::string password, std::string key, std::vector<configtuple> params) : lepclient(password, key, params){}
-	
-	int init();
-	
-	int run();
+    
+    int init();
+    
+    int run();
 
 };

@@ -24,10 +24,10 @@
 
 class device : public action{
 public:
-	device(int num_devices, std::string key);
+    device(int num_devices, std::string key);
 
-	virtual int connect() = 0;
+    virtual int connect() = 0;
 
 protected:
-	int num_devices;
+    int num_devices;
 };

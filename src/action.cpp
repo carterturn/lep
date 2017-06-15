@@ -24,5 +24,5 @@ using namespace std;
 action::action(string key) : key(key){}
 
 string action::getkey(){
-	return key;
+    return key;
 }
